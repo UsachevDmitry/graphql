@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/UsachevDmitry/graphql.git/graphql/graph/model"
+	"github.com/UsachevDmitry/graphql/graph/model"
 )
 
 // This file will not be regenerated automatically.

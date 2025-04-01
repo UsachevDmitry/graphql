@@ -10,11 +10,30 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/UsachevDmitry/graphql/graph"
+	"github.com/Hombrer/todos/graph"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
-const defaultPort = "8070"
+
+func NewRouter() *http.ServeMux {
+	router := http.NewServeMux()
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+
+	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
+
+	srv.Use(extension.Introspection{})
+	srv.Use(extension.AutomaticPersistedQuery{
+		Cache: lru.New[string](100),
+	})
+	router.Handle("/query", srv)
+	return router
+}
+
+const defaultPort = "8085"
 
 func main() {
 	port := os.Getenv("PORT")
